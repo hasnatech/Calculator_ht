@@ -1,0 +1,21 @@
+
+.currency_input {
+    border: 2px solid #005E87;
+    border-radius: 25px;
+    background: #FFFFFF;
+    margin: 5px 10px;
+    display: flex;
+    padding: 5px 10px;
+  
+    .symbol {
+      margin-right: 10px;
+    }
+  
+    .input {
+      width: 50px;
+      flex: 1;
+      border: 0;
+      background: #FFFFFF;
+      text-align: right;
+    }
+  }

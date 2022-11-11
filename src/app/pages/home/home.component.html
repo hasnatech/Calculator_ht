@@ -1,0 +1,489 @@
+<div class="grey-bg" *ngIf="showIntro == true">
+  <div class="intro">
+    <div class="close" (click)="showIntro = false">
+      <img src="assets/close.png" alt="">
+    </div>
+    <!-- <h1>Cargill Financial Metrics for Everyone Calculator</h1> -->
+    <h1>Profitability and Efficiency Calculator</h1>
+
+    <h2>Introduction</h2>
+
+    <p>Organization uses a portfolio of value measures to evaluate its financial performance and benchmark with competitors.
+      To measure progress against the company’s financial priorities, Organization focuses on three metrics: </p>
+      <ul>
+        <li>Material Margin, which keeps our focus on growth</li>
+        <li>Adjusted Operating Earnings (AOE), which keeps our focus on profitability</li>
+        <li>Return on Invested Capital (ROIC), which keeps our focus on efficiency</li>
+      </ul>
+      
+
+    <p>This calculator demonstrates how the financial data associated with Organization’s business—sales volume, price and costs, inventory, and others—affect the metrics.</p>
+
+    <h3>Using This Calculator</h3>
+
+    <p>The calculator contains two types of fields: <b>input</b> and <b>output</b>.</p>
+    <ul>
+      <li>You can change any values inside an oval. These are the <b>input</b> fields. </li>
+      <li>Other values change depending on the values inside the ovals. These are the <b>output</b> fields.</li>
+    </ul>
+    <p>Please note: </p>    
+    <ul>
+      <li>Some sections do not include input fields. </li>
+      <li>When changing a number, it must be a whole number or zero.</li>
+      <li>Number values are in whole units. For example, the number 300 means $300 and not $300,000. For non-monetary units such as sales volume, it denotes 300 units.</li>
+      <li>When you enter numeric data, omit any commas, decimal points, and dollar signs.</li>
+      <li><b>Product A</b> and <b>Product B</b> refer to any product that Organization handles. You can enter different values in the input fields under each product to compare two products.</li>
+      <li>Select <b>Reset</b> to bring the fields back to the starting values.</li>
+    </ul>
+
+    <p class="instruction">Select <b>Menu</b> for the list of activities.</p>
+    <p class="instruction">Select the question mark (?) to display these instructions.</p>
+    <p class="instruction">Select the X to close these instructions and work with the calculator.</p>
+
+  </div>
+</div>
+<div class="flex">
+  <div>
+    <div class="instruction-panel">
+      <div class="step flex flex-col">
+        <div class="flex-1">
+          <ng-container>
+            <!-- {{this.activity}}, {{this.step}} -->
+            <div class="activity-title">{{this.activities[this.activity].title}}</div>
+            <div [innerHTML]="this.activities[this.activity].activity[this.step].text"></div>
+            <p class="instruction white" *ngIf="step != this.activities[this.activity].activity.length - 1">Click Next
+              to continue</p>
+          </ng-container>
+        </div>
+        <div class="navigation flex fcenter">
+          <div class="previous cursor" [hidden]="step===0 && this.activity == 0" (click)="prev()">
+            Previous
+          </div>
+          <div class="flex-1">
+            <div class="dots">
+              <div class="dot" *ngFor="let dot of this.activities[this.activity].activity; let i = index"
+                [ngClass]="{'active' : step == i}" (click)="goto_step(i)"></div>
+            </div>
+          </div>
+          <div class="next cursor" [hidden]="step == this.activities[this.activity].activity.length - 1"
+            (click)="next()">
+            Next
+          </div>
+
+          <div class="next cursor"
+            [hidden]="!(step == this.activities[this.activity].activity.length - 1 && activity != this.activities.length - 1)"
+            (click)="next()">
+            Next Activity
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex-1 calculator-panel">
+    <div class="container">
+
+      <div class="flex">
+        <div class="flex-1">
+          <div class="text-center">
+            <!-- <h1>Sales and Revenue Calculator</h1> -->
+            <h1>Profitability and Efficiency Calculator</h1>
+          </div>
+        </div>
+
+      </div>
+      <div class="abs right_btn flex">
+        <div class="help" (click)="showIntro = true">
+          <img src="assets/help.png" alt="">
+        </div>
+        <div>
+          <button class="button" (click)="reset()">Reset</button>
+        </div>
+      </div>
+
+      <div class="container">
+        <!-- <div class="flex fwrap"> -->
+        <div>
+          <div class="panel">
+            <div class="text-center">
+              <div id="prof_table" class="title">Profitability Components</div>
+            </div>
+            <table class="table">
+              <tr class="text-center">
+                <td>
+                  <div class="subtitle"></div>
+                </td>
+                <td class="subtitle" colspan="2">Year 1</td>
+                <td></td>
+                <td class="subtitle" colspan="2">Year 2</td>
+              </tr>
+              <tr class="text-center bold">
+                <td></td>
+                <td>Product A</td>
+                <td>Product B</td>
+                <td></td>
+                <td>Product A</td>
+                <td>Product B</td>
+              </tr>
+              <tr valign="center" *ngFor="let item of profitability; let i = index" class="{{item.klass}}">
+                <td>
+                  <div class="name">{{item.name}}</div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">{{item.symbol}}</div>
+                    <input id="prof_a_{{i}}" type="text" class="input" [(ngModel)]="item.sale_y1_p1" currencyMask
+                      [options]="currencyOption" (ngModelChange)="calc(); checkValue()">
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+
+                  <div id="prof_curr_a_{{i}}" class="currency" *ngIf="item.input != true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">{{item.symbol}}</div>
+                    <div class="value">{{getCal(item.cal_sale_y1_p1.text, i, "sale_y1_p1", profitability)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true">
+                    <div class="symbol">{{item.symbol}}</div>
+                    <input type="text" currencyMask [options]="currencyOption" class="input"
+                      [(ngModel)]="item.sale_y1_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y1_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">{{item.symbol}}</div>
+                    <div class="value">{{getCal(item.cal_sale_y1_p2.text, i, "sale_y1_p2", profitability)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+                <td>
+
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol">{{item.symbol}}</div>
+                    <input type="text" currencyMask [options]="currencyOption" class="input"
+                      [(ngModel)]="item.sale_y2_p1" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">{{item.symbol}}</div>
+                    <div class="value">{{getCal(item.cal_sale_y2_p1.text, i, "sale_y2_p1", profitability)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true">
+                    <div class="symbol">{{item.symbol}}</div>
+                    <input type="text" currencyMask [options]="currencyOption" class="input"
+                      [(ngModel)]="item.sale_y2_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">$</div>
+                    <div class="value">{{getCal(item.cal_sale_y2_p2.text, i, "sale_y2_p2", profitability)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="panel">
+            <div class="text-center">
+              <div id="income_table" class="title">Income Statement Components</div>
+            </div>
+            <table class="table">
+              <tr class="text-center">
+                <td>
+                  <div class="subtitle"></div>
+                </td>
+                <td class="subtitle" colspan="2">Year 1</td>
+                <td></td>
+                <td class="subtitle" colspan="2">Year 2</td>
+              </tr>
+              <tr class="text-center bold">
+                <td></td>
+                <td>$</td>
+                <td>Profitability %</td>
+                <td></td>
+                <td>$</td>
+                <td>Profitability %</td>
+                <td>Variance $</td>
+              </tr>
+              <tr valign="center" *ngFor="let item of income_statement; let i = index" class="{{item.klass}}">
+                <td>
+                  <div class="name">
+                    {{item.name}}
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y1_p1" (ngModelChange)="calc()">
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+
+                  <div id="aoe_a_{{i}}" class="currency" *ngIf="item.input != true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">$</div>
+                    <div class="value">{{getCal(item.cal_sale_y1_p1.text, i, "sale_y1_p1", income_statement)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true">
+                    <div class="symbol">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y1_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y1_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p2.type == 'cur'">$</div>
+                    <div class="value">{{getCal(item.cal_sale_y1_p2.text, i, "sale_y1_p2", income_statement)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p2.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y2_p1" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">$</div>
+                    <div class="value">{{getCal(item.cal_sale_y2_p1.text, i, "sale_y2_p1", income_statement)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true">
+                    <div class="symbol">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y2_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p2.type == 'cur'">$</div>
+                    <div class="value">{{getCal(item.cal_sale_y2_p2.text, i, "sale_y2_p2", income_statement)}}
+                    </div>
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p2.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency" *ngIf="item.input != true && item.variant != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_variant.type == 'cur'">$</div>
+                    <div class="value">{{item.variant | number:'1.0':'en-US' | minusSignPipe}}
+                    </div>
+                    <div class="symbol" *ngIf="item.cal_variant.type == 'per'">%</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="panel">
+            <div class="text-center">
+              <div id="balance_table" class="title">Balance Sheet Components</div>
+            </div>
+            <table class="table">
+              <tr class="text-center">
+                <td>
+                  <div class="subtitle"></div>
+                </td>
+                <td class="subtitle" colspan="2">Year 1</td>
+                <td></td>
+                <td class="subtitle" colspan="2">Year 2</td>
+              </tr>
+              <tr class="text-center bold">
+                <td></td>
+                <td>$</td>
+                <td></td>
+                <td></td>
+                <td>$</td>
+                <td></td>
+                <td>Variance $</td>
+              </tr>
+              <tr valign="center" *ngFor="let item of balance_sheet; let i = index" class="{{item.klass}}">
+                <td>
+                  <div class="name">
+                    {{item.name}}
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">$</div>
+                    <input id="bal_a_{{i}}" type="text" class="input" currencyMask [options]="currencyOption"
+                      [(ngModel)]="item.sale_y1_p1" (ngModelChange)="calc();checkValue()">
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+
+                  <div id="bal_a_{{i}}" class="currency" *ngIf="item.input != true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">$</div>
+                    <div class="value">{{item.sale_y1_p1 | number:'1.0':'en-US' | minusSignPipe}}</div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y1_p2 != 'empty'">
+                    <div class="symbol">$</div>
+                    <input type="text" currencyMask [options]="currencyOption" class="input"
+                      [(ngModel)]="item.sale_y1_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y1_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p2.type == 'cur'">$</div>
+                    <div class="value">{{item.sale_y1_p2 | number:'1.0':'en-US' | minusSignPipe}}</div>
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p2.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol">$</div>
+                    <input type="text" currencyMask [options]="currencyOption" class="input"
+                      [(ngModel)]="item.sale_y2_p1" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.percetage != true">$</div>
+                    <div class="value">{{item.sale_y2_p1 | number:'1.0':'en-US' | minusSignPipe}}
+                    </div>
+                    <div class="symbol" *ngIf="item.percetage == true">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y2_p2 != 'empty'">
+                    <div class="symbol">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y2_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p2.type == 'cur'">$</div>
+                    <div class="value">{{item.sale_y2_p2}}
+                    </div>
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p2.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency">
+                    <div class="symbol">$</div>
+                    <div class="value">{{item.variant | number:'1.0':'en-US' | minusSignPipe}}
+                    </div>
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="panel">
+            <div class="text-center">
+              <div id="roic_table" class="title">ROIC</div>
+            </div>
+            <table class="table">
+              <tr class="text-center ">
+                <td>
+                  <div class="subtitle"></div>
+                </td>
+                <td class="subtitle" colspan="2">Year 1</td>
+                <td></td>
+                <td class="subtitle" colspan="2">Year 2</td>
+              </tr>
+              <tr class="text-center bold">
+                <td></td>
+                <td>$</td>
+                <td></td>
+                <td></td>
+                <td>$</td>
+                <td></td>
+                <td>Variance $</td>
+              </tr>
+              <tr valign="center" *ngFor="let item of roic; let i = index" class="{{item.klass}}">
+                <td>
+                  <div class="name">
+                    {{item.name}}
+                  </div>
+                </td>
+                <td>
+                  <div id="roic_a_{{i}}" class="currency_input"
+                    *ngIf="item.input == true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p1.type == 'cur'">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y1_p1" (ngModelChange)="calc()">
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p1.type == 'per'">%</div>
+                  </div>
+
+                  <div id="roic_a_{{i}}" class="currency" *ngIf="item.input != true && item.sale_y1_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p1.type == 'cur'">$</div>
+                    <div class="value">{{item.sale_y1_p1 | number:'1.0':'en-US' | minusSignPipe}}</div>
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p1.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y1_p2 != 'empty'">
+                    <div class="symbol">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y1_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y1_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p2.type == 'cur'">$</div>
+                    <div class="value">{{item.sale_y1_p2 | number:'1.0':'en-US' | minusSignPipe}}</div>
+                    <div class="symbol" *ngIf="item.cal_sale_y1_p2.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y2_p1" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p1 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p1.type == 'cur'">$</div>
+                    <div class="value">{{item.sale_y2_p1 | number:'1.0':'en-US' | minusSignPipe}}
+                    </div>
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p1.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency_input" *ngIf="item.input == true && item.sale_y2_p2 != 'empty'">
+                    <div class="symbol">$</div>
+                    <input type="number" class="input" [(ngModel)]="item.sale_y2_p2" (ngModelChange)="calc()">
+                  </div>
+                  <div class="currency" *ngIf="item.input != true && item.sale_y2_p2 != 'empty'">
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p2.type == 'cur'">$</div>
+                    <div class="value">{{item.sale_y2_p2 | number:'1.0':'en-US' | minusSignPipe}}
+                    </div>
+                    <div class="symbol" *ngIf="item.cal_sale_y2_p2.type == 'per'">%</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="currency">
+                    <div *ngIf="item.variant != 'empty'">
+                      <div class="value">{{item.variant}}<span class="symbol">%</span></div>
+
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="menu" [ngClass]="{'active':  showMenu == true}">
+  <div class="menu-title" (click)="showMenu = !showMenu">
+    <div class="rot">MENU</div>
+  </div>
+  <div class="menu-content">
+    <ul>
+      <li (click)="gotoActivity(0)">Activity 1: Material Margin</li>
+      <li (click)="gotoActivity(1)">Activity 2: Adjusted Operating Earnings </li>
+      <li (click)="gotoActivity(2)">Activity 3: Balance Sheet Components </li>
+      <li (click)="gotoActivity(3)">Activity 4: ROIC</li>
+    </ul>
+  </div>
+</div>
